@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Numia Retail - Demo</title>
+  <link rel="icon" type="image/png" href="images/N.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* --- Variables de color (Palacio) --- */
+    :root{
+      --numia-azul:#fec424;            /* principal Palacio */
+      --numia-azul-claro:#fff1c4;
+      --numia-azul-muy-claro:#fff7df;
+    }
+
+    body{ font-family:'Roboto',Arial,sans-serif; background:#f7f7f7; }
+
+    .card.ad-card{ border-radius:1.2rem; box-shadow:0 4px 18px rgba(0,0,0,0.08);
+      transition:transform .18s, box-shadow .18s; min-width:210px; min-height:380px;
+      display:flex; flex-direction:column; justify-content:stretch; height:100%;
+    }
+    .card.ad-card:hover{ transform:translateY(-4px) scale(1.025); box-shadow:0 8px 32px rgba(0,0,0,0.12); }
+    .card-img-top-holder{ width:100%; height:180px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#fffdf4; border-top-left-radius:1.2rem; border-top-right-radius:1.2rem; }
+    .card-img-top-holder img{ width:100%; height:100%; object-fit:cover; object-position:center; transition:transform .3s; }
+    .ad-card .card-body{ display:flex; flex-direction:column; justify-content:flex-start; height:100%; padding-bottom:1.5rem; }
+    .ad-card .card-title{ font-weight:700; color:#1a1a1a; font-size:1.25rem; margin:.25rem 0 0; min-height:3rem; display:flex; align-items:center; justify-content:center; text-align:center; }
+    .ad-card .card-text{ font-size:1.01rem; color:#2d2d2d; font-weight:500; opacity:.88; margin-bottom:1.1rem; min-height:56px; text-align:center; display:flex; align-items:center; justify-content:center; }
+
+    .carousel-item img{ object-fit:cover; width:100%; height:340px; border-radius:.7rem; }
+    @media (max-width:991px){ .main-cards .col-lg-3{flex:0 0 50%; max-width:50%; margin-bottom:1rem;} .carousel-item img{height:180px;} }
+    @media (max-width:767px){ .main-cards .col-lg-3{flex:0 0 100%; max-width:100%;} .carousel-item img{height:140px;} .card-img-top-holder{height:140px;} .ad-card .card-title{font-size:1.08rem;} }
+
+    /* --- Sección central (Tarjetas / Servicios) --- */
+    .rates-section{ display:flex; gap:2.2rem; align-items:stretch; margin:36px 0 0; width:100%; flex-wrap:wrap; }
+    .rates-col-table{ background:#fff; border-radius:1.1rem; box-shadow:0 2px 12px rgba(0,0,0,0.07); padding:2.1rem 1.6rem 1.6rem 1.7rem; min-width:340px; flex:2 1 540px; max-width:1000px; display:flex; flex-direction:column; justify-content:flex-start; }
+    .rates-col-side{ background:#fff; border-radius:1.1rem; box-shadow:0 2px 12px rgba(0,0,0,0.07); padding:2.1rem 1.6rem 1.6rem 1.7rem; min-width:220px; flex:1 1 320px; max-width:420px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+    .rates-col-side .bi{ font-size:2.6rem; color:var(--numia-azul); margin-bottom:.7rem; }
+    .rates-col-side h5{ color:#1a1a1a; font-weight:700; margin-bottom:.5rem; font-size:1.2rem; }
+    .rates-col-side p{ color:#444; font-size:1.07rem; font-weight:500; margin-bottom:1.2rem; opacity:.93; }
+    .rates-col-side .btn{ background:var(--numia-azul); border:none; color:#000; font-weight:800; border-radius:24px; padding:.7rem 2.1rem; font-size:1.07rem; box-shadow:0 2px 7px rgba(0,0,0,0.06); transition:filter .18s; }
+    .rates-col-side .btn:hover{ filter:brightness(.92); color:#000; }
+
+    .rates-tab-btn{ padding:.7rem 0; border:none; border-radius:9px; font-weight:bold; font-size:1.1rem; background:#fff; color:#1a1a1a; margin-bottom:0; cursor:pointer; border:2px solid #ffe08a; min-width:70px; transition:background .16s, color .16s, border-color .16s; }
+    .rates-tab-btn.active,.rates-tab-btn:focus{ background:var(--numia-azul); color:#000; border:2px solid var(--numia-azul); }
+
+    .rates-table{ width:100%; border-collapse:separate; border-spacing:0; background:#fff; border-radius:.8rem; overflow:hidden; margin-top:.7rem; }
+    .rates-table th,.rates-table td{ padding:12px 18px; font-size:1.04rem; text-align:left; }
+    .rates-table th{ color:#1a1a1a; background:var(--numia-azul-claro); border:none; font-size:1.08rem; font-weight:700; text-align:center; letter-spacing:.02em; }
+    .rates-table tr:not(:last-child){ border-bottom:1px solid #ffe08a; }
+    .rates-table tr:nth-child(2){ background:var(--numia-azul-claro); }
+    .rates-table tr:nth-child(3){ background:var(--numia-azul-muy-claro); }
+    .rates-table td{ color:#222; font-weight:500; text-align:center; vertical-align:middle; }
+    .rates-table td:first-child,.rates-table th:first-child{ text-align:left; }
+
+    /* Botones principales al color Palacio */
+    .btn-primary{ background-color:var(--numia-azul)!important; border-color:var(--numia-azul)!important; color:#000!important; font-weight:800; }
+    .btn-primary:hover{ filter:brightness(.92); border-color:var(--numia-azul)!important; color:#000!important; }
+    .btn-outline-primary{ color:#1a1a1a!important; border-color:var(--numia-azul)!important; }
+    .btn-outline-primary:hover{ background-color:var(--numia-azul)!important; color:#000!important; }
+
+    /* Chat buttons */
+    #max-chat{ background:var(--numia-azul)!important; color:#000!important; }
+    #open-chat{ background:var(--numia-azul)!important; color:#000!important; }
+
+    /* ======== Estilos del flujo de Fila Virtual (Click & Collect) ======== */
+    .modal-wait .info-item{ display:flex; justify-content:space-between; align-items:center; padding:.8rem 1rem; border:1px solid #ffe08a; border-radius:.6rem; background:linear-gradient(135deg,#fffaf0,#fff4cf); }
+    .modal-wait .info-label{ font-weight:600; color:#4b5563; }
+    .modal-wait .info-value{ font-weight:700; color:#8a6a00; }
+    .badge-live{ background:#22c55e; }
+    .status-warn{ color:#f59e0b; font-weight:700; }
+    .status-ok{ color:#22c55e; font-weight:700; }
+    .status-done{ color:#06b6d4; font-weight:700; }
+    .status-err{ color:#ef4444; font-weight:700; }
+
+    .modal-video .modal-dialog{ width:var(--video-width, 90vw); max-width:100%; }
+    .modal-video .modal-content{ height:var(--video-height, 80vh); }
+    .modal-video iframe{ width:100%; height:100%; border:0; border-radius:.5rem; }
+
+    /* Modal multi-paso (consulta → registro → formulario) */
+    .step-hidden{ display:none; }
+    .lookup-status{ min-height:44px; display:flex; align-items:center; gap:.5rem; }
+    .lookup-status .spinner-border{ width:1.2rem; height:1.2rem; }
+    .soft-divider{ border-top:1px dashed #ffe08a; }
+
+    /* ======== Estilos módulo Citas (restaurado) ======== */
+    #modalCita .modal-dialog { max-width: 920px; }
+    #modalCita .modal-content { border-radius: 16px; border: 0; box-shadow: 0 14px 40px rgba(0,0,0,.12); }
+    #modalCita .modal-header { border-bottom: 1px solid #fff3c9; }
+    #modalCita .modal-body { padding-top: .75rem; }
+
+    .cita-toolbar { position: sticky; top: 0; z-index: 2; background: #fff; padding-bottom: .5rem; margin-bottom: .75rem; border-bottom: 1px solid #fff3c9; }
+    #citaSchedule, #citaBranch, #citaFecha { border-radius: 10px; }
+    #citaSlots { display:grid; grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); gap:.5rem; max-height:320px; overflow:auto; padding-right:.25rem; }
+    #citaSlots .btn { border-radius:10px; border:1px solid #ffe08a; font-weight:600; padding:.45rem .3rem; }
+    #citaSlots .btn:hover { background:#fff7df; }
+    #citaSlots .btn.active, #citaSlots .btn:focus { background:var(--numia-azul); color:#000; border-color:var(--numia-azul); }
+    .cita-legend { font-size:.8rem; color:#6c6c7a; }
+    @media (max-width:576px){ #citaSlots { max-height:260px; } }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm py-2 mb-0">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <a href="index.html" class="d-block">
+          <img src="images/numia.png" alt="Numia Logo" class="img-fluid" style="max-height:70px;" />
+        </a>
+        <a href="#" class="d-block">
+          <img src="images/logopalacio.png" alt="El Palacio de Hierro" class="img-fluid" style="max-height:90px;" />
+        </a>
+      </div>
+      <p class="lead mt-2 mb-0 text-dark text-start" style="font-size:1rem;">
+        Experiencias Palacio potenciadas por IA: compras y servicios superiores
+      </p>
+    </div>
+  </header>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom" style="z-index:1050;">
+    <div class="container">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-center" id="navbarMain">
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item dropdown px-2">
+            <a class="nav-link dropdown-toggle fw-semibold" href="#" id="cuentasDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-bag-heart me-1"></i>Productos
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="cuentasDropdown">
+              <li><a class="dropdown-item" href="#"><i class="bi bi-bag-check me-2"></i>Novedades & Tendencias</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-percent me-2"></i>Promociones</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-gift me-2"></i>Lista de Regalos</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown px-2">
+            <a class="nav-link dropdown-toggle fw-semibold" href="#" id="tarjetasDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-credit-card-2-front me-1"></i>Tarjetas Palacio
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="tarjetasDropdown">
+              <li><a class="dropdown-item" href="#"><i class="bi bi-credit-card-2-front me-2"></i>Clásica</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-credit-card me-2"></i>Oro</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-credit-card-fill me-2"></i>Elite</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown px-2">
+            <a class="nav-link dropdown-toggle fw-semibold" href="#" id="creditosDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-tools me-1"></i>Servicios Palacio
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="creditosDropdown">
+              <li><a class="dropdown-item" href="#"><i class="bi bi-house-gear me-2"></i>Reparaciones del hogar</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-truck me-2"></i>Instalaciones & Envíos</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-emoji-smile me-2"></i>Servicio de psicólogo</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown px-2">
+            <a class="nav-link dropdown-toggle fw-semibold" href="#" id="inversionesDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-stars me-1"></i>Experiencias
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="inversionesDropdown">
+              <li><a class="dropdown-item" href="#"><i class="bi bi-scissors me-2"></i>Styling y belleza</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-cup-hot me-2"></i>Gourmet</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-bicycle me-2"></i>Wellness</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown px-2">
+            <a class="nav-link dropdown-toggle fw-semibold" href="#" id="segurosDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle me-1"></i>Mi Palacio
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="segurosDropdown">
+              <li><a class="dropdown-item" href="#"><i class="bi bi-receipt me-2"></i>Mis pedidos</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-credit-card me-2"></i>Mi tarjeta</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-chat-dots me-2"></i>Ayuda</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Carrusel -->
+  <div class="container mb-4">
+    <div id="carouselMain" class="carousel slide shadow-sm rounded-3" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="images/Carrusel 1.png" class="d-block w-100" alt="Temporada Palacio">
+          <div class="carousel-caption d-none d-md-block">
+            <h5 class="fw-bold display-6" style="text-shadow:0 2px 12px rgba(0,0,0,0.36)">Temporada Palacio</h5>
+            <p class="fs-4">Estrena con nuestros descuentos <strong>exclusivos de liquidación</strong></p>
+            <a href="#" class="btn btn-primary btn-lg rounded-pill mt-2 px-4 fw-bold">Ver colecciones</a>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="images/Carrusel 2.png" class="d-block w-100" alt="Servicios Palacio">
+          <div class="carousel-caption d-none d-md-block">
+            <h5 class="fw-bold display-6">Servicios Palacio</h5>
+            <p class="fs-4">Servicios especiales para el hogar y bienestar personal a domicilio</p>
+            <a href="#" class="btn btn-outline-light btn-lg rounded-pill mt-2 px-4 fw-bold">Agenda ahora</a>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="images/Carrusel 3.png" class="d-block w-100" alt="Beneficios Tarjeta Palacio">
+          <div class="carousel-caption d-none d-md-block">
+            <h5 class="fw-bold display-6">Tarjeta Palacio</h5>
+            <p class="fs-4">Bonos por apertura y meses sin intereses exclusivos</p>
+            <a href="#" class="btn btn-primary btn-lg rounded-pill mt-2 px-4 fw-bold">Solicitar</a>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselMain" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselMain" data-bs-slide="next">
+        <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+      </button>
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselMain" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselMain" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselMain" data-bs-slide-to="2" aria-label="Slide 3"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARJETAS -->
+  <main class="container mb-5">
+    <div class="row g-4 justify-content-center main-cards">
+      <!-- 1) Abre Citas -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card ad-card h-100 text-center">
+          <div class="card-img-top-holder">
+            <img src="images/Tarjeta de credito.jpg" alt="Servicios Palacio">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Servicios Palacio</h5>
+            <p class="card-text">Dale un plus a tu vida y a tu hogar con servicios exclusivos pensados para ti.</p>
+            <button class="btn btn-primary rounded-pill px-4 mt-2 fw-bold" disabled>Agendar cita</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2) Abre Fila Virtual multi-paso -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card ad-card h-100 text-center">
+          <div class="card-img-top-holder">
+            <img src="images/Apertura de cuenta.png" alt="Click & Collect">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Click & Collect</h5>
+            <p class="card-text">Disfruta de experiencias y recibe una notificación cuando tu pedido esté listo.</p>
+            <button id="btnCheckinComenzar" class="btn btn-outline-primary rounded-pill px-4 mt-2 fw-bold">Hacer checkin</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card ad-card h-100 text-center">
+          <div class="card-img-top-holder">
+            <img src="images/Prestamo personal.png" alt="Reparaciones del hogar">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Hogar Palacio</h5>
+            <p class="card-text">El arte de transformar espacios comienza aquí.</p>
+            <button class="btn btn-primary rounded-pill px-4 mt-2 fw-bold" disabled>Agendar servicio</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card ad-card h-100 text-center">
+          <div class="card-img-top-holder">
+            <img src="images/seguros.png" alt="Psicología Palacio">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Bienestar Palacio</h5>
+            <p class="card-text">Sesiones presenciales u online con especialistas médicos y psicologos.</p>
+            <button class="btn btn-outline-primary rounded-pill px-4 mt-2 fw-bold" disabled>Reservar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: Tarjetas y Servicios -->
+    <div class="rates-section mt-5 mb-4">
+      <div class="rates-col-table">
+        <div class="d-flex gap-3 mb-2">
+          <button class="rates-tab-btn active" id="tabDivisas" onclick="showRatesTab('divisas')">Tarjetas</button>
+          <button class="rates-tab-btn" id="tabTasas" onclick="showRatesTab('tasas')">Servicios Palacio</button>
+        </div>
+        <!-- Tabla Tarjetas -->
+        <table class="rates-table" id="tablaDivisas">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>MSI destacados</th>
+              <th>Beneficios clave</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Tarjeta Palacio Clásica</td><td>3 y 6 MSI</td><td>Bonos de bienvenida · Preventas</td></tr>
+            <tr><td>Tarjeta Palacio Oro</td><td>3, 6 y 9 MSI</td><td>Meses sin intereses extendidos · Eventos</td></tr>
+            <tr><td>Tarjeta Palacio Elite</td><td>Hasta 12 MSI</td><td>Experiencias VIP · Concierge</td></tr>
+          </tbody>
+        </table>
+        <!-- Tabla Servicios -->
+        <table class="rates-table" id="tablaTasas" style="display:none;">
+          <thead>
+            <tr>
+              <th>Servicio</th>
+              <th>Modalidad</th>
+              <th>Desde</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Hogar Palacio - Proyecto de interiores</td><td>A domicilio</td><td>$3999 MXN</td></tr>
+            <tr><td>Mascota Palacio - El bienestar de los consentidos</td><td>Online / Presencial</td><td>$599 MXN</td></tr>
+            <tr><td>Bienestar Palacio - Consulta Psicología</td><td>Online / Presencial</td><td>$999 MXN</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="rates-col-side">
+        <i class="bi bi-gift"></i>
+        <h5 class="mb-1" style="font-weight:700;">Tu mundo Palacio</h5>
+        <p><strong>Recompensas:</strong> acumula y redime puntos en moda, hogar y gourmet.</p>
+        <p>¿Necesitas apoyo? Agenda asistencia de hogar o una sesión de bienestar en minutos.</p>
+        <button class="btn" disabled>Ir a Mi Palacio</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-light text-center py-3 mt-auto border-top">
+    <small>&copy; Numia · Experiencias Palacio. Todos los derechos reservados.</small>
+  </footer>
+
+  <!-- ===================== MODALES Fila Virtual (Click & Collect) ===================== -->
+  <!-- Modal multi-paso: 1) Consulta pedido 2) Registro 3) Form turno -->
+  <div class="modal fade" id="modalMultiPaso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+
+        <!-- HEADER dinámico -->
+        <div class="modal-header">
+          <h5 class="modal-title" id="multiPasoTitle"><i class="bi bi-geo-alt me-2"></i>Consulta de pedido</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body">
+          <div id="multiPasoAlert" class="alert d-none"></div>
+
+          <!-- Paso 1: Consulta (tel + pedido) -->
+          <div id="stepLookup">
+            <div class="mb-2">
+              <label class="form-label fw-semibold">Número de pedido</label>
+              <input id="inOrderLookup" type="text" class="form-control" placeholder="ph000000">
+            </div>
+            <div class="lookup-status mt-3" id="lookupStatus"></div>
+          </div>
+
+          <!-- Paso 2: Registro -->
+          <div id="stepRegistry" class="step-hidden">
+            <h6 class="fw-bold mb-2">Registro</h6>
+            <p class="mb-0">Usuario no registrado, ¿te gustaría crear <strong>Cuenta Palacio</strong>?</p>
+          </div>
+
+          <!-- Paso 3: Form de turno -->
+          <div id="stepForm" class="step-hidden">
+            <div id="formAlert" class="alert d-none"></div>
+            <form id="guardiaForm" class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Nombre</label>
+                <input type="text" class="form-control" name="firstName" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Apellido</label>
+                <input type="text" class="form-control" name="lastName" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">DNI</label>
+                <input type="text" class="form-control" name="dni" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Teléfono</label>
+                <input type="tel" class="form-control" name="phone" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Email</label>
+                <input type="email" class="form-control" name="email" required>
+              </div>
+            </form>
+            <div class="small text-muted mt-3">
+              Al continuar, te asignaremos un turno y verás una sala de espera. Cuando el agente esté listo, podrás iniciar una videollamada.
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOTER dinámico -->
+        <div class="modal-footer" id="multiPasoFooter">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button id="btnNext" class="btn btn-primary">Consultar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Sala de espera -->
+  <div class="modal fade modal-wait" id="modalSalaEspera" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-clock-history me-2"></i>RESERVA TU TURNO</h5>
+          <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" id="btnCloseWait"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-3">
+            <div class="mb-2">
+              <span class="badge badge-live rounded-pill px-3 py-2">
+                <i class="bi bi-check2-circle me-1"></i>Turno Reservado Exitosamente
+              </span>
+            </div>
+            <div class="text-success fw-semibold">¡Tu turno ha sido generado en el sistema!</div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="info-item">
+                <div class="info-label">Código del Turno:</div>
+                <div class="info-value"><a href="#" id="turnCodeDisplay" class="link-primary fw-bold" onclick="return false;">—</a></div>
+              </div>
+            </div>
+            <div class="col-md-6"><div class="info-item"><div class="info-label">Número de Turno:</div><div class="info-value" id="turnNumber">—</div></div></div>
+            <div class="col-md-6"><div class="info-item"><div class="info-label">Estado del Turno:</div><div class="info-value" id="turnStatus" class="status-warn">Consultando...</div></div></div>
+            <div class="col-md-6"><div class="info-item"><div class="info-label">Tiempo de Espera Actual:</div><div class="info-value" id="currentWaitingTime">N/A</div></div></div>
+            <div class="col-md-6"><div class="info-item"><div class="info-label">Tiempo Promedio de Espera:</div><div class="info-value" id="avgWaitingTime">N/A</div></div></div>
+            <div class="col-md-6"><div class="info-item"><div class="info-label">Cola/Servicio:</div><div class="info-value" id="queueName">—</div></div></div>
+            <div class="col-md-6"><div class="info-item"><div class="info-label">Sala de Espera:</div><div class="info-value" id="waitingRoomName">—</div></div></div>
+          </div>
+
+          <div class="text-center mt-4">
+            <button id="btnAbrirVideo" class="btn btn-primary" disabled>
+              <i class="bi bi-bag-check me-1"></i>Continuar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Videollamada -->
+  <div class="modal fade modal-video" id="modalVideo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-2">
+        <div class="d-flex justify-content-between align-items-center px-2">
+          <h6 class="m-0"><i class="bi bi-camera-video me-2"></i>Videollamada</h6>
+          <button class="btn btn-sm btn-outline-secondary" id="btnResizeVideo">Cambiar tamaño</button>
+        </div>
+        <div class="mt-2 h-100">
+          <iframe id="videoFrame" src="about:blank"
+            allow="camera; microphone; autoplay; fullscreen; clipboard-write; display-capture"
+            referrerpolicy="no-referrer" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- =================== FIN MODALES FV =================== -->
+
+  <!-- ===================== MODAL CITAS (RESTABLECIDO) ===================== -->
+  <div class="modal fade" id="modalCita" tabindex="-1" aria-labelledby="modalCitaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalCitaLabel">
+            <i class="bi bi-calendar2-week me-2"></i>Agenda tu servicio
+          </h5>
+          <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+          <div id="citaAlert" class="alert d-none"></div>
+
+          <div class="cita-toolbar">
+            <div class="row g-3 align-items-end">
+              <div class="col-lg-4">
+                <label class="form-label fw-semibold">Servicio / Agenda</label>
+                <select id="citaSchedule" class="form-select">
+                  <option value="">Cargando...</option>
+                </select>
+              </div>
+              <div class="col-lg-4">
+                <label class="form-label fw-semibold">Sucursal</label>
+                <select id="citaBranch" class="form-select" disabled>
+                  <option value="">Selecciona un servicio</option>
+                </select>
+              </div>
+              <div class="col-lg-4">
+                <label class="form-label fw-semibold">Fecha</label>
+                <div class="d-flex gap-2">
+                  <input id="citaFecha" type="date" class="form-control" disabled/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Horarios disponibles</label>
+            <div id="citaSlots"></div>
+          </div>
+
+          <hr class="my-3">
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Nombre</label>
+              <input id="citaFirst" class="form-control" placeholder="Nombre">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Apellido</label>
+              <input id="citaLast" class="form-control" placeholder="Apellido">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">No. Cliente</label>
+              <input id="citaDni" class="form-control" placeholder="0000">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input id="citaMail" type="email" class="form-control" placeholder="correo@dominio.com">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <div class="me-auto cita-legend">Selecciona un horario para habilitar la confirmación.</div>
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button id="citaConfirmar" class="btn btn-primary" disabled>Confirmar cita</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- =================== FIN MODAL CITAS =================== -->
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Pestañas + Chat bubble -->
+  <script>
+    function showRatesTab(tab){
+      const tabDivisas=document.getElementById('tabDivisas');
+      const tabTasas=document.getElementById('tabTasas');
+      const tablaDivisas=document.getElementById('tablaDivisas');
+      const tablaTasas=document.getElementById('tablaTasas');
+      if(tab==='divisas'){ tabDivisas.classList.add('active'); tabTasas.classList.remove('active'); tablaDivisas.style.display=''; tablaTasas.style.display='none'; }
+      else { tabDivisas.classList.remove('active'); tabTasas.classList.add('active'); tablaDivisas.style.display='none'; tablaTasas.style.display=''; }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      const iframe = document.getElementById('numia-chat-bubble');
+      const btn = document.getElementById('max-chat');
+      const openBtn = document.getElementById('open-chat');
+      let maximized = false;
+      openBtn.onclick = function() { iframe.style.display='block'; btn.style.display='flex'; openBtn.style.display='none'; };
+      btn.onclick = function() {
+        if (!maximized) {
+          iframe.style.width='98vw'; iframe.style.height='94vh'; iframe.style.bottom='3vh'; iframe.style.right='1vw'; iframe.style.boxShadow='none';
+          btn.style.bottom='calc(94vh + 3vh + 12px)'; btn.textContent='🗗'; maximized = true;
+        } else {
+          iframe.style.width='370px'; iframe.style.height='550px'; iframe.style.bottom='24px'; iframe.style.right='24px'; iframe.style.boxShadow='none';
+          btn.style.bottom='590px'; btn.textContent='⛶'; maximized = false;
+        }
+      };
+    });
+  </script>
+
+  <!-- ====================== Flujo Turno / Fila Virtual (Palacio) ====================== -->
+  <script>
+    // ===== Config FV (Palacio) =====
+    const FV_TOKEN  = 'XZlIOz0he65whQPLyNigHUvBgMmOGJlZ60NZDsg1';
+    const FV_QUEUE  = 14554;
+    const FV_BRANCH = 10703;
+    const FV_BASE   = 'https://filavirtual2.debmedia.com/api/v1';
+    const VIDEO_CALL_URL = 'about:blank';
+
+    // ===== Estado global =====
+    let pollingInterval = null;
+    let lastTurnCode = null;
+
+    // ===== UI: botón de Check-in =====
+    const btnCheckinComenzar = document.getElementById('btnCheckinComenzar');
+
+    // Multi-paso modal
+    const modalMultiPaso = new bootstrap.Modal(document.getElementById('modalMultiPaso'), { backdrop:'static', keyboard:false });
+    const multiPasoTitle = document.getElementById('multiPasoTitle');
+    const multiPasoAlert = document.getElementById('multiPasoAlert');
+    const multiPasoFooter = document.getElementById('multiPasoFooter');
+
+    const stepLookup  = document.getElementById('stepLookup');
+    const stepRegistry= document.getElementById('stepRegistry');
+    const stepForm    = document.getElementById('stepForm');
+
+    const inOrderLookup = document.getElementById('inOrderLookup');
+    const lookupStatus  = document.getElementById('lookupStatus');
+
+    // Form del paso 3
+    const formEl = document.getElementById('guardiaForm');
+    const formAlert = document.getElementById('formAlert');
+
+    // Sala de espera y video
+    const modalWait = new bootstrap.Modal(document.getElementById('modalSalaEspera'), { backdrop:'static', keyboard:false });
+    const modalVideo= new bootstrap.Modal(document.getElementById('modalVideo'), { backdrop:'static' });
+
+    const $ = (id)=> document.getElementById(id);
+
+    function setAlert(container, type, msg){
+      container.className = `alert alert-${type}`;
+      container.textContent = msg;
+      container.classList.remove('d-none');
+    }
+    function clearAlert(container){
+      container.className = 'alert d-none';
+      container.textContent = '';
+    }
+
+    // ========== Lanzar flujo desde tarjeta ==========
+    btnCheckinComenzar.addEventListener('click', ()=>{
+      resetMultiPaso();
+      modalMultiPaso.show();
+    });
+
+    // ========== Control de pasos ==========
+    let currentStep = 1; // 1: lookup, 2: registry, 3: form
+
+    function resetMultiPaso(){
+      currentStep = 1;
+      clearAlert(multiPasoAlert);
+      inOrderLookup.value = '';
+      lookupStatus.innerHTML = '';
+      formEl.reset();
+      renderStep();
+    }
+
+    function renderStep(){
+      stepLookup.style.display  = (currentStep===1)?'block':'none';
+      stepRegistry.style.display= (currentStep===2)?'block':'none';
+      stepForm.style.display    = (currentStep===3)?'block':'none';
+
+      if(currentStep === 1){
+        multiPasoTitle.innerHTML = '<i class="bi bi-geo-alt me-2"></i>Consulta de pedido';
+        multiPasoFooter.innerHTML = `
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button id="btnNext" class="btn btn-primary">Consultar</button>
+        `;
+      }
+      if(currentStep === 2){
+        multiPasoTitle.innerHTML = '<i class="bi bi-person-plus me-2"></i>Registro';
+        multiPasoFooter.innerHTML = `
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button id="btnNo" class="btn btn-outline-primary">No</button>
+          <button id="btnSi" class="btn btn-primary">Sí</button>
+        `;
+      }
+      if(currentStep === 3){
+        multiPasoTitle.innerHTML = '<i class="bi bi-person-vcard me-2"></i>Registro de turno';
+        multiPasoFooter.innerHTML = `
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button id="btnEnviarTurno" class="btn btn-primary"><i class="bi bi-check2-circle me-1"></i>Generar turno</button>
+        `;
+      }
+
+      bindFooterHandlers();
+    }
+
+    function bindFooterHandlers(){
+      if(currentStep === 1){
+        document.getElementById('btnNext').addEventListener('click', onLookup);
+      } else if(currentStep === 2){
+        document.getElementById('btnNo').addEventListener('click', ()=> goToStep(3));
+        document.getElementById('btnSi').addEventListener('click', ()=> goToStep(3));
+      } else if(currentStep === 3){
+        document.getElementById('btnEnviarTurno').addEventListener('click', onSubmitTurn);
+      }
+    }
+
+    function goToStep(n){ currentStep = n; renderStep(); }
+
+    // ========== Paso 1: Consulta (simulación) ==========
+    async function onLookup(){
+      clearAlert(multiPasoAlert);
+      const order = (inOrderLookup.value || '').trim();
+      if(!order){
+        setAlert(multiPasoAlert, 'danger', 'Completa el número de pedido.');
+        return;
+      }
+
+      lookupStatus.innerHTML = `
+        <div class="d-flex align-items-center">
+          <span class="spinner-border me-2" role="status" aria-hidden="true"></span>
+          <span>Consultando en el sistema...</span>
+        </div>
+      `;
+      await new Promise(r=> setTimeout(r, 1400));
+      lookupStatus.innerHTML = `
+        <div class="text-success fw-semibold">
+          <i class="bi bi-check2-circle me-1"></i>Pedido listo para recoger
+        </div>
+        <hr class="soft-divider my-3">
+        <div class="small text-muted">Continúa para confirmar tus datos y obtener tu turno.</div>
+      `;
+      // Cambiar footer a "Continuar"
+      multiPasoFooter.innerHTML = `
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="btnContinuarToReg" class="btn btn-primary">Continuar</button>
+      `;
+      document.getElementById('btnContinuarToReg').addEventListener('click', ()=> goToStep(2));
+    }
+
+    // ========== Paso 3: Enviar turno ==========
+    function setFormAlert(type,msg){ setAlert(formAlert, type, msg); }
+
+    async function onSubmitTurn(){
+      clearAlert(formAlert);
+      const data = Object.fromEntries(new FormData(formEl).entries());
+      if(!data.firstName || !data.lastName || !data.dni || !data.email || !data.phone){
+        setFormAlert('danger','Completa todos los campos.');
+        return;
+      }
+
+      const btn = document.getElementById('btnEnviarTurno');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generando...';
+
+      try{
+        const url = `${FV_BASE}/queue/${FV_QUEUE}/branch/${FV_BRANCH}/enqueue`;
+        const res = await fetch(url, {
+          method:'POST',
+          headers:{ 'x-api-token': FV_TOKEN, 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            firstName: data.firstName,
+            lastName:  data.lastName,
+            dni:       data.dni,
+            email:     data.email,
+            phone:     data.phone
+          })
+        });
+        const out = await res.json().catch(()=> ({}));
+        if(!res.ok) throw new Error(out?.message || `Error en servidor (${res.status})`);
+
+        const turnCode  = out.code || '—'; lastTurnCode = turnCode; localStorage.setItem('turnCode', turnCode);
+        const turnNumber= out.jsonDetails?.turn || out.jsonDetails?.actualTurn || '—';
+        const avgWait   = out.jsonDetails?.averageWaitingTime ?? out.jsonDetails?.serviceTime ?? 'N/A';
+        const queueName = out.jsonDetails?.queue?.name || '—';
+        const wrName    = out.jsonDetails?.waitingRoom?.name || '—';
+
+        fillWaitModal({
+          code: turnCode,
+          number: turnNumber,
+          avgWait: (isFinite(avgWait) ? `${Math.floor(parseFloat(avgWait))} min` : 'N/A'),
+          queueName,
+          waitingRoom: wrName
+        });
+
+        modalMultiPaso.hide();
+        modalWait.show();
+        startPolling(turnCode);
+
+      }catch(err){
+        setFormAlert('danger', err.message);
+      }finally{
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i>Generar turno';
+      }
+    }
+
+    function fillWaitModal({code, number, avgWait, queueName, waitingRoom}){
+      $('turnCodeDisplay').textContent = code;
+      $('turnNumber').textContent = number;
+      $('avgWaitingTime').textContent = avgWait;
+      $('queueName').textContent = queueName;
+      $('waitingRoomName').textContent = waitingRoom;
+      $('turnStatus').textContent = 'Consultando...';
+      $('turnStatus').className = 'info-value status-warn';
+      $('currentWaitingTime').textContent = 'N/A';
+      $('btnAbrirVideo').disabled = true;
+    }
+
+    function startPolling(turnCode){
+      stopPolling();
+      const url = `${FV_BASE}/turn/code/${encodeURIComponent(turnCode)}`;
+      const mapStatus = (s) =>
+        s==='ANNOUNCED' ? {text:'Lo estamos llamando', cls:'status-ok'} :
+        s==='WAITING_TO_BE_CALLED' ? {text:'En breve lo llamaremos', cls:'status-warn'} :
+        s==='FINALIZED' ? {text:'Atención finalizada', cls:'status-done'} :
+        {text: (s||'Desconocido'), cls:'status-warn'};
+
+      const tick = async ()=>{
+        try{
+          const res = await fetch(url, { headers:{ 'x-api-token': FV_TOKEN, 'Content-Type':'text/plain' }});
+          if(!res.ok) throw new Error(`Estado no disponible (${res.status})`);
+          const data = await res.json();
+
+          const m = mapStatus(data.status);
+          $('turnStatus').textContent = m.text;
+          $('turnStatus').className = `info-value ${m.cls}`;
+
+          const avg = (data.averageWaitingTime ?? data.serviceTime);
+          if(avg!==undefined && avg!==null && !isNaN(avg)){
+            $('currentWaitingTime').textContent = `${Math.floor(parseFloat(avg))} min`;
+          }
+
+          if(data.status === 'ANNOUNCED'){
+            $('btnAbrirVideo').disabled = false;
+          }
+        }catch(e){
+          $('turnStatus').textContent = 'Error al consultar';
+          $('turnStatus').className = 'info-value status-err';
+        }
+      };
+
+      tick();
+      pollingInterval = setInterval(tick, 5000);
+    }
+
+    function stopPolling(){ if(pollingInterval){ clearInterval(pollingInterval); pollingInterval = null; } }
+
+    document.getElementById('btnCloseWait').addEventListener('click', stopPolling);
+    document.getElementById('btnAbrirVideo').addEventListener('click', ()=>{
+      openVideoModal({ width:'90vw', height:'80vh', url: VIDEO_CALL_URL });
+    });
+
+    // Video modal sizing
+    document.getElementById('btnResizeVideo').addEventListener('click', ()=>{
+      const dlg = document.querySelector('#modalVideo .modal-dialog');
+      const curW = dlg.style.getPropertyValue('--video-width') || '90vw';
+      const nextW = (curW.trim()==='90vw') ? '70vw' : '90vw';
+      const nextH = (nextW==='70vw') ? '60vh' : '80vh';
+      dlg.style.setProperty('--video-width', nextW);
+      document.querySelector('#modalVideo .modal-content').style.setProperty('--video-height', nextH);
+    });
+
+    function openVideoModal({width='90vw', height='80vh', url='about:blank'}={}){
+      const dlg = document.querySelector('#modalVideo .modal-dialog');
+      const content = document.querySelector('#modalVideo .modal-content');
+      dlg.style.setProperty('--video-width', width);
+      content.style.setProperty('--video-height', height);
+      document.getElementById('videoFrame').src = url;
+      modalVideo.show();
+    }
+  </script>
+
+  <!-- ================== MÓDULO DE CITAS (RESTABLECIDO, IIFE) ================== -->
+  <script>
+    (function(){
+      // Token de tu base Palacio (conservado)
+      const API_TOKEN = 'rHFcKbDdvkuFRP83FdQYhA3njJsn7JWD8146i1hO';
+      const SVC_LIST   = 'https://citas2.debmedia.com/api/v2/reducedSchedules';
+      const AVAIL_BASE = 'https://citas2.debmedia.com/api/v2/schedules';
+      const APPT_URL   = 'https://citas2.debmedia.com/api/v2/appointments';
+
+      const modalEl = document.getElementById('modalCita');
+      const modal = new bootstrap.Modal(modalEl);
+      const btnPrimaryCards = document.querySelectorAll('.ad-card .btn.btn-primary'); // primer botón primario = "Agendar cita"
+      const alertBox = document.getElementById('citaAlert');
+      const selSchedule = document.getElementById('citaSchedule');
+      const selBranch   = document.getElementById('citaBranch');
+      const inputFecha  = document.getElementById('citaFecha');
+      const slotsWrap   = document.getElementById('citaSlots');
+      const btnConfirm  = document.getElementById('citaConfirmar');
+
+      const inFirst = document.getElementById('citaFirst');
+      const inLast  = document.getElementById('citaLast');
+      const inDni   = document.getElementById('citaDni');
+      const inMail  = document.getElementById('citaMail');
+
+      let schedules = [];
+      let selectedSlot = null; // { startAt, defaultDuration }
+
+      // Habilitar botón "Agendar cita" (primero de la grilla)
+      if (btnPrimaryCards && btnPrimaryCards.length) {
+        const btnAgendar = btnPrimaryCards[0];
+        btnAgendar.removeAttribute('disabled');
+        btnAgendar.addEventListener('click', async () => {
+          resetForm();
+          modal.show();
+          await loadSchedules();
+        });
+      }
+
+      const pad = n => String(n).padStart(2,'0');
+      function setAlert(type, msg){
+        alertBox.className = `alert alert-${type}`;
+        alertBox.textContent = msg;
+        alertBox.classList.remove('d-none');
+      }
+      function clearAlert(){
+        alertBox.className = 'alert d-none';
+        alertBox.textContent = '';
+      }
+
+      function resetForm(){
+        clearAlert();
+        selSchedule.innerHTML = `<option value="">Cargando...</option>`;
+        selBranch.innerHTML   = `<option value="">Selecciona un servicio</option>`;
+        selBranch.disabled = true;
+        inputFecha.value = '';
+        inputFecha.disabled = true;
+        slotsWrap.innerHTML = '';
+        selectedSlot = null;
+        btnConfirm.disabled = true;
+        inFirst.value = ''; inLast.value = ''; inDni.value = ''; inMail.value = '';
+      }
+
+      async function loadSchedules(){
+        try{
+          const res = await fetch(SVC_LIST, { headers: { 'x-api-token': API_TOKEN } });
+          if(!res.ok) throw new Error(`No se pudieron obtener las agendas (${res.status})`);
+          schedules = await res.json();
+
+          selSchedule.innerHTML = `<option value="">Selecciona un servicio...</option>`;
+          schedules.forEach(s => selSchedule.insertAdjacentHTML('beforeend', `<option value="${s.id}">${s.name}</option>`));
+
+          const today = new Date();
+          const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+          inputFecha.min = ymd(today);
+          inputFecha.disabled = false;
+
+          selSchedule.onchange = handleScheduleChange;
+          selBranch.onchange = handleBranchOrDateChange;
+          inputFecha.onchange = handleBranchOrDateChange;
+
+        }catch(err){ setAlert('danger', err.message); }
+      }
+
+      function handleScheduleChange(){
+        const schedId = selSchedule.value;
+        selBranch.innerHTML = `<option value="">Selecciona sucursal...</option>`;
+        selBranch.disabled = true;
+        slotsWrap.innerHTML = '';
+        btnConfirm.disabled = true;
+
+        if(!schedId){ return; }
+        const sched = schedules.find(s => String(s.id) === String(schedId));
+        if(!sched || !Array.isArray(sched.branches)) { setAlert('danger','Esta agenda no tiene sucursales asociadas.'); return; }
+        const seen = new Set();
+        sched.branches.forEach(b=>{
+          if(!seen.has(b.id)){
+            selBranch.insertAdjacentHTML('beforeend', `<option value="${b.id}">${b.name}</option>`);
+            seen.add(b.id);
+          }
+        });
+        selBranch.disabled = false; clearAlert();
+      }
+
+      async function handleBranchOrDateChange(){
+        clearAlert();
+        slotsWrap.innerHTML = '';
+        selectedSlot = null;
+        btnConfirm.disabled = true;
+
+        const schedId = selSchedule.value;
+        const branchId = selBranch.value;
+        const dateStr  = inputFecha.value;
+        if(!schedId || !branchId || !dateStr){ return; }
+
+        try{
+          const url = `${AVAIL_BASE}/${encodeURIComponent(schedId)}/branch/${encodeURIComponent(branchId)}/availability?strDate=${encodeURIComponent(dateStr)}`;
+          const res = await fetch(url, { headers: { 'x-api-token': API_TOKEN }});
+          if(!res.ok) throw new Error(`No se pudo obtener disponibilidad (${res.status})`);
+          const data = await res.json();
+
+          const slots = Array.isArray(data) ? data : (Array.isArray(data.slots) ? data.slots : []);
+          if(slots.length === 0){ setAlert('info','No hay horarios disponibles para la fecha seleccionada.'); return; }
+
+          const frag = document.createDocumentFragment();
+          slots.forEach(slot=>{
+            const hora = slot.zonedStartDate.substring(11,16);
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-light';
+            btn.textContent = hora;
+            btn.addEventListener('click', ()=>{
+              [...slotsWrap.querySelectorAll('.btn')].forEach(b=>b.classList.remove('active'));
+              btn.classList.add('active');
+              selectedSlot = { startAt: slot.zonedStartDate, defaultDuration: (slot.defaultDuration||0) };
+              btnConfirm.disabled = false;
+            });
+            frag.appendChild(btn);
+          });
+          slotsWrap.appendChild(frag);
+
+        }catch(err){ setAlert('danger', err.message); }
+      }
+
+      // Helpers para generar endAt con el MISMO offset que startAt
+      function minutesOffsetFromSuffix(suffix){ // "-0300" -> -180
+        const m = suffix.match(/^([+-])(\d{2})(\d{2})$/);
+        if(!m) return 0;
+        const sign = m[1] === '-' ? -1 : 1;
+        return sign * (parseInt(m[2],10)*60 + parseInt(m[3],10));
+      }
+      const pad2 = n => String(n).padStart(2,'0');
+      function buildEndAtLikeStart(startAtStr, addMinutes){
+        const offsetMatch = startAtStr.match(/([+-]\d{4}|Z)$/);
+        const offsetSuffix = offsetMatch ? offsetMatch[1] : 'Z';
+        const offsetMin = offsetSuffix==='Z' ? 0 : minutesOffsetFromSuffix(offsetSuffix);
+        const msStart = new Date(startAtStr).getTime();
+        const msEnd = msStart + (addMinutes*60000);
+        const d = new Date(msEnd + offsetMin*60000);
+        const Y = d.getUTCFullYear(), M = d.getUTCMonth()+1, D = d.getUTCDate();
+        const H = d.getUTCHours(), m = d.getUTCMinutes(), S = d.getUTCSeconds();
+        return `${Y}-${pad2(M)}-${pad2(D)}T${pad2(H)}:${pad2(m)}:${pad2(S)}${offsetSuffix}`;
+      }
+
+      btnConfirm.addEventListener('click', async ()=>{
+        clearAlert();
+        if(!selectedSlot){ setAlert('danger','Selecciona un horario primero.'); return; }
+        const schedId = selSchedule.value;
+        const branchId = selBranch.value;
+        if(!schedId || !branchId){ setAlert('danger','Faltan servicio o sucursal.'); return; }
+        if(!inFirst.value || !inLast.value || !inDni.value){ setAlert('danger','Completa Nombre, Apellido y Número de cliente.'); return; }
+
+        const startAt = selectedSlot.startAt; // "YYYY-MM-DDTHH:mm:ss-0300"
+        const endAt   = buildEndAtLikeStart(startAt, selectedSlot.defaultDuration || 0);
+
+        const body = {
+          branch:   { id: Number(branchId) },
+          schedule: { id: Number(schedId) },
+          startAt,
+          endAt,
+          customer: {
+            firstName: inFirst.value,
+            lastName:  inLast.value,
+            dni:       String(inDni.value || '').trim(),
+            email:     (inMail.value || '').trim() || undefined
+          },
+          reason: "Cita de servicio"
+        };
+
+        btnConfirm.disabled = true; btnConfirm.textContent = 'Confirmando...';
+
+        try{
+          const res = await fetch(APPT_URL, {
+            method: 'POST',
+            headers: { 'x-api-token': API_TOKEN, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          const out = await res.json().catch(()=> ({}));
+          if(!res.ok){ throw new Error(out?.message || `Error al crear la cita (${res.status})`); }
+          setAlert('success', `¡Cita creada! ID: ${out.id || '(recibido)'}`);
+          setTimeout(()=> modal.hide(), 1400);
+        }catch(err){
+          setAlert('danger', err.message);
+        }finally{
+          btnConfirm.disabled = false; btnConfirm.textContent = 'Confirmar cita';
+        }
+      });
+    })();
+  </script>
+
+  <!-- CHAT -->
+  <iframe
+    src="https://filavirtual.preprod.debmedia.com/Numiabot/#/itnHfy7Qi9td1wXx5NVE"
+    id="numia-chat-bubble"
+    style="position: fixed; bottom: 24px; right: 24px; width: 370px; height: 550px; border: none; z-index: 9999; border-radius: 18px; overflow: hidden; transition: width .3s, height .3s, right .3s, bottom .3s; display: none;"
+    allow="camera; microphone"
+  ></iframe>
+  <button id="max-chat"
+    style="position: fixed; bottom: 590px; right: 24px; z-index: 10000; background: var(--numia-azul); color:#000; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 1.6rem; box-shadow: 0 2px 8px rgba(0,0,0,0.18); cursor: pointer; display: none; align-items: center; justify-content: center; transition: background .2s;"
+    title="Maximizar/minimizar chat">⛶</button>
+  <button id="open-chat"
+    style="position: fixed; bottom: 24px; right: 24px; z-index: 10001; background: var(--numia-azul); color:#000; border: none; border-radius: 50%; width: 64px; height: 64px; font-size: 2.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.18); cursor: pointer; display: flex; align-items: center; justify-content: center;"
+    title="Abrir chat">
+    <span style="font-weight:900; font-size:2rem;">N</span>
+  </button>
+</body>
+</html>
